@@ -1,0 +1,27 @@
+market_research_task:
+  description: >
+    Research {company} ({ticker}) using web search and market data.
+    Focus on: latest company developments, product/business momentum, key competitors,
+    macro or sector context, and major near-term catalysts.
+    Use tools to collect concrete evidence.
+  expected_output: >
+    A structured research brief with sections for recent developments, business model,
+    competitors, catalysts, and key risks. Include concrete facts and keep it concise.
+
+fundamentals_task:
+  description: >
+    Analyze {company} ({ticker}) using yfinance metrics and SEC filings.
+    Review valuation context, profitability, growth, balance sheet signals,
+    and notable statements from the latest 10-K or 10-Q if available.
+  expected_output: >
+    A structured fundamentals brief with key metrics, financial strengths,
+    financial weaknesses, and noteworthy SEC filing insights.
+
+investment_memo_task:
+  description: >
+    Combine the market research and fundamentals analysis into a final stock memo for {company} ({ticker}).
+    The memo must include: business summary, recent developments, financial snapshot,
+    valuation context, bull case, bear case, catalyst watchlist, and a final balanced view.
+    Do not provide personal financial advice. Make uncertainty explicit.
+  expected_output: >
+    A clean markdown report with headings, bullets, and a final balanced conclusion.

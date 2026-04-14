@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 import yaml
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
 
@@ -22,12 +22,17 @@ class StockAnalysisCrew:
             self.agents_config = yaml.safe_load(f)
         with open(base / "config" / "tasks.yaml", "r", encoding="utf-8") as f:
             self.tasks_config = yaml.safe_load(f)
+        self.local_llm = LLM(
+            model="ollama/openhermes",
+            base_url="http://localhost:11434"
+        )
 
     @agent
     def market_researcher(self) -> Agent:
         return Agent(
             config=self.agents_config["market_researcher"],
             verbose=True,
+            llm=self.local_llm,
             tools=[SerperDevTool(), StockSnapshotTool(), SecFilingsTool()],
         )
 
@@ -36,6 +41,7 @@ class StockAnalysisCrew:
         return Agent(
             config=self.agents_config["fundamentals_analyst"],
             verbose=True,
+            llm=self.local_llm,
             tools=[StockSnapshotTool(), SecFilingsTool(), SecSectionTool()],
         )
 
@@ -44,6 +50,7 @@ class StockAnalysisCrew:
         return Agent(
             config=self.agents_config["report_writer"],
             verbose=True,
+            llm=self.local_llm,
         )
 
     @task

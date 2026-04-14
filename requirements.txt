@@ -2,7 +2,8 @@ crewai>=0.121.0
 crewai-tools>=0.45.0
 yfinance>=0.2.54
 sec-api>=1.0.29
-pandas>=2.2.3
+pandas==2.2.2
 pydantic>=2.10.0
 PyYAML>=6.0.2
 python-dotenv>=1.0.1
+requests==2.32.4

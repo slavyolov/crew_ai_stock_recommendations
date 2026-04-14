@@ -6,9 +6,12 @@ from typing import List
 import yaml
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import SerperDevTool
-
-from colab_stock_crew.tools.stock_tools import StockSnapshotTool, SecFilingsTool, SecSectionTool
+from colab_stock_crew.tools.stock_tools import (
+    StockSnapshotTool,
+    SecFilingsTool,
+    SecSectionTool,
+    SerpApiSearchTool,
+)
 
 
 @CrewBase
@@ -33,7 +36,7 @@ class StockAnalysisCrew:
             config=self.agents_config["market_researcher"],
             verbose=True,
             llm=self.local_llm,
-            tools=[SerperDevTool(), StockSnapshotTool(), SecFilingsTool()],
+            tools=[SerpApiSearchTool(), StockSnapshotTool(), SecFilingsTool()],
         )
 
     @agent

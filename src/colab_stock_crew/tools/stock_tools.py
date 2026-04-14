@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import json
+import requests
 from typing import Type
 
 import yfinance as yf
@@ -86,17 +88,17 @@ class SecFilingsTool(BaseTool):
         res = query_api.get_filings(query)
         filings = []
         for item in res.get("filings", []):
-            filings.append(
-                {
-                    "ticker": item.get("ticker"),
-                    "companyName": item.get("companyName"),
-                    "formType": item.get("formType"),
-                    "filedAt": item.get("filedAt"),
-                    "linkToFilingDetails": item.get("linkToFilingDetails"),
-                    "linkToTxt": item.get("linkToTxt"),
-                    "linkToHtml": item.get("linkToHtml"),
-                }
-            )
+            if item.get("formType") != form_type:
+                continue
+            filings.append({
+                "ticker": item.get("ticker"),
+                "companyName": item.get("companyName"),
+                "formType": item.get("formType"),
+                "filedAt": item.get("filedAt"),
+                "linkToFilingDetails": item.get("linkToFilingDetails"),
+                "linkToTxt": item.get("linkToTxt"),
+                "linkToHtml": item.get("linkToHtml"),
+            })
         return json.dumps(filings, indent=2)
 
     @staticmethod
@@ -130,3 +132,40 @@ class SecSectionTool(BaseTool):
         if not key:
             raise ValueError("SEC_API_KEY environment variable is required")
         return key
+
+
+class SerpApiSearchInput(BaseModel):
+    query: str = Field(..., description="Google search query")
+    news: bool = Field(default=False, description="Whether to search Google News")
+
+
+class SerpApiSearchTool(BaseTool):
+    name: str = "serpapi_search"
+    description: str = "Search Google or Google News using SerpApi."
+
+    args_schema: Type[BaseModel] = SerpApiSearchInput
+
+    def _run(self, query: str, news: bool = False) -> str:
+        api_key = os.getenv("SERPAPI_API_KEY")
+        if not api_key:
+            raise ValueError("SERPAPI_API_KEY environment variable is required")
+
+        params = {
+            "engine": "google",
+            "q": query,
+            "api_key": api_key,
+            "num": 5
+        }
+
+        if news:
+            params["tbm"] = "nws"
+
+        r = requests.get("https://serpapi.com/search.json", params=params, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+
+        return json.dumps({
+            "organic_results": data.get("organic_results", [])[:5],
+            "news_results": data.get("news_results", [])[:5],
+            "search_information": data.get("search_information", {})
+        }, indent=2)

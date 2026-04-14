@@ -83,4 +83,5 @@ class StockAnalysisCrew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
+            model="ollama/openhermes"
         )
